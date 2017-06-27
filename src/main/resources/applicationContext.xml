@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+          http://www.springframework.org/schema/beans/spring-beans.xsd
+          http://www.springframework.org/schema/mvc
+          http://www.springframework.org/schema/mvc/spring-mvc.xsd
+          http://www.springframework.org/schema/tx
+          http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+          http://www.springframework.org/schema/context
+          http://www.springframework.org/schema/context/spring-context.xsd
+          http://www.springframework.org/schema/aop  
+          http://www.springframework.org/schema/aop/spring-aop-3.2.xsd">
+
+   <bean id="UserIO" class="com.mycompany.floor.ui.UserIOImpl"/>
+    <bean id="View" class="com.mycompany.floor.ui.FloorView">
+        <constructor-arg ref="UserIO"/>
+    </bean>
+   <bean id="orderDao" class="com.mycompany.floor.dao.FloorOrderDaoImpl"/>
+   <bean id="stateDao" class="com.mycompany.floor.dao.FloorStateDaoImpl"/>
+   <bean id="productDao" class="com.mycompany.floor.dao.FloorProductDaoImpl"/>
+    <bean id="Service" class="com.mycompany.floor.service.FloorServiceImpl">
+        <constructor-arg ref="orderDao"/>
+        <constructor-arg ref="stateDao"/>
+        <constructor-arg ref="productDao"/>
+    </bean>
+    <bean id="Controller" class="com.mycompany.floor.controller.FloorController">
+        <constructor-arg ref="Service"/>
+        <constructor-arg ref="View"/>
+    </bean>
+    <bean id="LoggingDao" class="com.mycompany.floor.dao.LoggingDao"/>
+     <bean id="LoggingAdvice" class="com.mycompany.floor.advice.LoggingAdvice">
+         <constructor-arg ref="LoggingDao"/>
+     </bean>
+   
+      <aop:config>
+  <aop:aspect ref="LoggingAdvice">
+
+      <aop:after-returning
+          method="logAdd"
+          pointcut="execution(* com.mycompany.floor.dao.FloorOrderDaoImpl.add*(..))"
+       />
+      <aop:after-returning
+          method="logRemove"
+          pointcut="execution(* com.mycompany.floor.dao.FloorOrderDaoImpl.remove*(..))"
+       />
+      <aop:after-returning
+          method="logEdit"
+          pointcut="execution(* com.mycompany.floor.service.FloorServiceImpl.editOrder*(..))"
+       />
+      <aop:after-returning
+          method="logSave"
+          pointcut="execution(* com.mycompany.floor.dao.FloorOrderDaoImpl.save*(..))"
+       />
+           
+    </aop:aspect>
+</aop:config>
+       
+   
+</beans>
+
