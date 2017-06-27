@@ -1,0 +1,4 @@
+Apple::4::0.75
+Watermelon::13::1.25
+Blueberry::15::0.10
+Pineapple::14::1.00
